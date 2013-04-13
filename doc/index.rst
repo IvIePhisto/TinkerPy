@@ -1,7 +1,6 @@
 TinkerPy
 ========
 
-
 .. automodule:: tinkerpy
         :no-members:
 

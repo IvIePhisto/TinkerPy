@@ -8,7 +8,6 @@ This Python module provides:
 *   some useful decorators (:func:`multi_decorator`, :func:`attribute_dict`)
 *   the function :func:`utf16chr` to create a UTF-16 string from a Unicode
     codepoint
-
 '''
 
 import collections
