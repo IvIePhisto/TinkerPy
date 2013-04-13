@@ -1,7 +1,7 @@
 TinkerPy
 ========
 
-This Python module provides:
+This Python project contains the package ``tinkerpy`` which provides:
 
 *   special dictionary implementations
 *   a function to flatten data structures composed of iterables

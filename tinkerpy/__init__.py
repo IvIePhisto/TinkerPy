@@ -1,5 +1,5 @@
 '''\
-This Python module provides:
+This Python package provides:
 
 *   special dictionary implementations (:class:`AttributeDict`,
     :class:`ImmutableDict`)
