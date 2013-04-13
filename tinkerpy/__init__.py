@@ -6,7 +6,7 @@ This Python package provides:
 *   the :func:`flatten` function to flatten data structures composed of
     iterables
 *   some useful decorators (:func:`multi_decorator`, :func:`attribute_dict`)
-*   the function :func:`utf16chr` to create a UTF-16 string from a Unicode
+*   the function :func:`utf16chr` to create an UTF-16 string from an Unicode
     codepoint
 '''
 
