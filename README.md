@@ -1,4 +1,4 @@
-NameTinkers
+TinkerPy
 ===========
 
-Tools tinkering with names in Python.
+Tools tinkering with Python built-ins.
