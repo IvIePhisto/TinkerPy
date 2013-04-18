@@ -29,7 +29,7 @@ setup(name='TinkerPy',
       url='https://github.com/IvIePhisto/TinkerPy',
       license='MIT License',
       packages=find_packages(exclude=['tests']),
-      test_suite='tests',
+      test_suite='tests.test_suite',
       include_package_data=True,
       zip_safe=True,
 )
