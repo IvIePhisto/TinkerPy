@@ -1,6 +1,10 @@
 '''\
-This Python package provides:
+TinkerPy
+========
 
+This Python 2 and 3 package provides:
+
+*   funtionality related to Python 2 versus 3
 *   special dictionary implementations (:class:`AttributeDict`,
     :class:`ImmutableDict`)
 *   the :func:`flatten` function to flatten data structures composed of
@@ -8,9 +12,63 @@ This Python package provides:
 *   some useful decorators (:func:`multi_decorator`, :func:`attribute_dict`)
 *   the function :func:`utf16chr` to create an UTF-16 string from an Unicode
     codepoint
+
+
+Python 2 vs. 3
+--------------
+
+.. autofunction:: py2or3
+
+.. py:data:: STRING_TYPES
+
+    For Python 2 this is the :func:`tuple` ``(str, unicode)``, in Python 3
+    this is simply :func:`str`.
+
+
+
+Iterator Types
+--------------
+
+.. autoclass:: AttributeDict
+.. autoclass:: ImmutableDict
+.. autofunction:: flatten
+
+
+Decorators
+----------
+
+.. autofunction:: multi_decorator
+.. autofunction:: namespace
+.. autofunction:: attribute_dict
+
+
+Unicode
+-------
+
+.. autofunction:: utf16chr
+
 '''
 
 import collections
+
+# Python 2 vs. 3
+
+def py2or3(py2, py3):
+    '''\
+    Returns one of the given arguments depending on the Python version.
+
+    :param py2: The value to return in Python 2.
+    :param py3: The value to return in Python 3.
+    :returns: ``py2`` or ``py3`` depending on the Python version.
+    '''
+    import sys
+    if sys.version_info[0] >= 3:
+        return py3
+    else:
+        return py2
+
+
+STRING_TYPES = py2or3(lambda:(str, unicode), lambda:str)()
 
 
 # ITERATOR TYPES
@@ -33,19 +91,19 @@ class AttributeDict(dict):
     Examples:
 
     >>> ad = AttributeDict((('foo', 1), ('bar', 2)))
-    >>> print ad.foo; print ad.bar
+    >>> print(ad.foo); print(ad.bar)
     1
     2
-    >>> ad.foo = 3; print ad.foo == ad['foo']
+    >>> ad.foo = 3; print(ad.foo == ad['foo'])
     True
     >>> del ad['bar']
-    >>> print ad.bar
+    >>> print(ad.bar)
     Traceback (most recent call last):
     AttributeError: 'bar'
-    >>> print 'bar' in ad
+    >>> print('bar' in ad)
     False
     >>> ad.bar = 2
-    >>> print 'bar' in ad
+    >>> print('bar' in ad)
     False
     '''
     def __getattr__(self, name):
@@ -73,7 +131,7 @@ class ImmutableDict(collections.Mapping):
     :class:`dict`.
 
     >>> immutable = ImmutableDict({'foo': 1, 'bar': 2})
-    >>> print immutable['foo']
+    >>> print(immutable['foo'])
     1
     >>> del immutable['foo']
     Traceback (most recent call last):
@@ -120,7 +178,7 @@ def flatten(obj, *flattening_configurations):
                 (lambda obj: isinstance(obj, collections.Mapping),
                     lambda obj: obj.values()),
                 (lambda obj: (isinstance(obj, collections.Iterable)
-                        and not isinstance(obj, (str, unicode))), )
+                        and not isinstance(obj, STRING_TYPES)), )
             )
 
     :returns: A generator returning all descendants of all of elements of
@@ -155,7 +213,7 @@ def flatten(obj, *flattening_configurations):
     >>> mapping = {1: 'foo', 2: 'bar'}
     >>> iterable = ('Hello', 'World', mapping)
     >>> for e in flatten(iterable):
-    ...     print e
+    ...     print(e)
     Hello
     World
     foo
@@ -164,7 +222,7 @@ def flatten(obj, *flattening_configurations):
     ...     (lambda obj: isinstance(obj, collections.Mapping),
     ...         lambda obj: obj.keys(), ),
     ...     (lambda obj: (isinstance(obj, collections.Iterable)
-    ...             and not isinstance(obj, (str, unicode))), ),
+    ...             and not isinstance(obj, STRING_TYPES)), ),
     ... )
     >>> tuple(flatten(iterable, *flattening_configs))
     ('Hello', 'World', 1, 2)
@@ -174,7 +232,7 @@ def flatten(obj, *flattening_configurations):
             (lambda obj: isinstance(obj, collections.Mapping),
                 lambda obj: obj.values(), ),
             (lambda obj: (isinstance(obj, collections.Iterable)
-                    and not isinstance(obj, (str, unicode))), )
+                    and not isinstance(obj, STRING_TYPES)), )
         )
     def _flatten(*objects):
         for obj in objects:
@@ -260,11 +318,11 @@ def namespace(mapping, *names, **attributes):
     >>> a = 1
     >>> @namespace(StringGenerator(), 'a', 'c', 'd', 'e', e='namespace e')
     ... def test(b, c=3):
-    ...     print a
-    ...     print b
-    ...     print c
-    ...     print d
-    ...     print e
+    ...     print(a)
+    ...     print(b)
+    ...     print(c)
+    ...     print(d)
+    ...     print(e)
     ...
     >>> test(2)
     StringGen: a
@@ -274,16 +332,16 @@ def namespace(mapping, *names, **attributes):
     namespace e
     >>> @namespace(StringGenerator())
     ... def test():
-    ...     print a
+    ...     print(a)
     ...
     Traceback (most recent call last):
     ValueError: If no names are given, the first argument must be a mapping.
     >>> @namespace(dict(a='namespace a', c='namespace c', d='namespace d'))
     ... def test(b, c=3):
-    ...     print a
-    ...     print b
-    ...     print c
-    ...     print d
+    ...     print(a)
+    ...     print(b)
+    ...     print(c)
+    ...     print(d)
     >>> test(2)
     namespace a
     2
@@ -291,7 +349,7 @@ def namespace(mapping, *names, **attributes):
     namespace d
     '''
     def decorator(func):
-        func_globals = dict(func.func_globals)
+        func_globals = dict(func.__globals__)
         if len(names) > 0:
             for name in names:
                 func_globals[name] = mapping[name]
@@ -303,8 +361,8 @@ def namespace(mapping, *names, **attributes):
                 raise ValueError('If no names are given, the first argument must be a mapping.')
         for name in attributes:
             func_globals[name] = attributes[name]
-        func = func.__class__(func.func_code, func_globals, func.func_name,
-            func.func_defaults, func.func_closure)
+        func = func.__class__(func.__code__, func_globals, func.__name__,
+            func.__defaults__, func.__closure__)
         return func
     return decorator
 
@@ -323,8 +381,8 @@ def attribute_dict(target):
     >>> @attribute_dict
     ... def Test(z):
     ...     def t(foo):
-    ...         print z
-    ...         print foo
+    ...         print(z)
+    ...         print(foo)
     ...     return locals()
     ...
     >>> t = Test('foo')
@@ -343,15 +401,22 @@ def attribute_dict(target):
 
 def utf16chr(code_point):
     '''\
-    Return a Unicode string of one character, specified as a code point,
-    encoded as UTF-16.
+    Return a Unicode string of one character, specified as a code point.
 
+    :param code_point: The code point to encode.
+    :returns: A UTF-16 unicode string.
 
     Examples:
 
-    >>> utf16chr(0x23EF)    # character contained in Basic Multilingual Plane
-    u'\u23ef'
-    >>> utf16chr(0x1F600)   # character from a Supplemental Plane
-    u'\U0001f600'
+    >>> ord(utf16chr(0x23EF))    # character contained in Basic Multilingual Plane
+    9199
+    >>> suppl_char = utf16chr(0x1F600)   # character from a Supplemental Plane
+    >>> py2or3(
+    ...     lambda: ord(suppl_char[0]) == 55357 and ord(suppl_char[1]) == 56832,
+    ...     lambda: ord(suppl_char[0]) == 128512
+    ... )()
+    True
     '''
-    return (r'\U' + '{:0=8x}'.format(code_point)).decode('unicode-escape')
+    return (b'\U' + '{:0=8x}'.format(code_point).encode()).decode(
+        'unicode-escape')
+

@@ -1,26 +1,29 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.1.1'
+version = '0.2.0'
 
 setup(name='TinkerPy',
       version=version,
       description="Tools tinkering with basic Python stuff.",
       long_description='''\
-      This Python project contains the package ``tinkerpy`` which provides:
+      This Python 2 and 3 project (tested with 2.7 and 3.3) contains the
+      package ``tinkerpy`` which provides:
 
+      *   funtionality related to Python 2 versus 3
       *   special dictionary implementations
       *   a function to flatten data structures composed of iterables
       *   some useful decorators
       *   a function to create an UTF-16 string from an Unicode codepoint
       ''',
       classifiers=[
-            'Development Status :: 4 - Beta',
+            'Development Status :: 5 - Production/Stable',
             'Intended Audience :: Developers',
             'License :: OSI Approved :: MIT License',
             'Natural Language :: English',
             'Operating System :: OS Independent',
             'Programming Language :: Python :: 2.7',
+            'Programming Language :: Python :: 3.3',
             'Topic :: Software Development :: Libraries :: Python Modules'
       ], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       keywords='tool decorator dict mapping Unicode',
