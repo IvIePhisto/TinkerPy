@@ -10,8 +10,7 @@ This Python 2 and 3 package provides:
 *   the :func:`flatten` function to flatten data structures composed of
     iterables
 *   some useful decorators (:func:`multi_decorator`, :func:`attribute_dict`)
-*   the function :func:`utf16chr` to create an UTF-16 string from an Unicode
-    codepoint
+*   SAX handlers
 
 
 Python 2 vs. 3
@@ -23,7 +22,6 @@ Python 2 vs. 3
 
     For Python 2 this is the :func:`tuple` ``(str, unicode)``, in Python 3
     this is simply :func:`str`.
-
 
 
 Iterator Types
@@ -42,14 +40,16 @@ Decorators
 .. autofunction:: attribute_dict
 
 
-Unicode
--------
+SAX Handlers
+------------
 
-.. autofunction:: utf16chr
-
+..autoclass:: LexicalHandler
+..autoclass:: DeclarationHandler
 '''
 
 import collections
+import abc
+
 
 # Python 2 vs. 3
 
@@ -359,10 +359,14 @@ def namespace(mapping, *names, **attributes):
                     func_globals[name] = mapping[name]
             else:
                 raise ValueError('If no names are given, the first argument must be a mapping.')
+        try:
+            func_closure = func.__closure__
+        except AttributeError:
+            func_closure = func.func_closure
         for name in attributes:
             func_globals[name] = attributes[name]
         func = func.__class__(func.__code__, func_globals, func.__name__,
-            func.__defaults__, func.__closure__)
+            func.__defaults__, func_closure)
         return func
     return decorator
 
@@ -397,26 +401,51 @@ def attribute_dict(target):
     return wrapper
 
 
-# UNICODE
 
-def utf16chr(code_point):
+# SAX
+
+class LexicalHandler(object):
     '''\
-    Return a Unicode string of one character, specified as a code point.
-
-    :param code_point: The code point to encode.
-    :returns: A UTF-16 unicode string.
-
-    Examples:
-
-    >>> ord(utf16chr(0x23EF))    # character contained in Basic Multilingual Plane
-    9199
-    >>> suppl_char = utf16chr(0x1F600)   # character from a Supplemental Plane
-    >>> py2or3(
-    ...     lambda: ord(suppl_char[0]) == 55357 and ord(suppl_char[1]) == 56832,
-    ...     lambda: ord(suppl_char[0]) == 128512
-    ... )()
-    True
+    A stub base class for a lexical handler (see
+    :const:`xml.sax.handler.property_lexial_handler`).
     '''
-    return (b'\U' + '{:0=8x}'.format(code_point).encode()).decode(
-        'unicode-escape')
+    __metaclass__ = abc.ABCMeta
 
+    def comment(self, content):
+        '''Receive notification of a comment.'''
+        pass
+
+    def startCDATA(self):
+        '''Receive notification of the beginning of CDATA section.'''
+        pass
+
+    def endCDATA(self):
+        '''Receive notification of the end of CDATA section.'''
+        pass
+
+
+class DeclarationHandler(object):
+    '''\
+    A stub base class for a declaration handler (see
+    :const:`xml.sax.handler.property_declaration_handler`).
+    '''
+    __metaclass__ = abc.ABCMeta
+
+    def startDTD(self, name, public_id, system_id):
+        '''Receive notification of the beginning of a DTD.'''
+        pass
+
+    def endDTD(self):
+        '''Receive notification of the end of a DTD.'''
+        pass
+
+    def startEntity(self, name):
+        '''Receive notification of the beginning of an entity.'''
+        pass
+
+    def endEntity(self, name):
+        '''Receive notification of the end of an entity.'''
+        pass
+
+
+del abc

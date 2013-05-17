@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.2.0'
+version = '0.2.1'
 
 setup(name='TinkerPy',
       version=version,
@@ -14,7 +14,7 @@ setup(name='TinkerPy',
       *   special dictionary implementations
       *   a function to flatten data structures composed of iterables
       *   some useful decorators
-      *   a function to create an UTF-16 string from an Unicode codepoint
+      *   SAX handlers
       ''',
       classifiers=[
             'Development Status :: 5 - Production/Stable',
