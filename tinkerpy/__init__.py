@@ -43,8 +43,8 @@ Decorators
 SAX Handlers
 ------------
 
-..autoclass:: LexicalHandler
-..autoclass:: DeclarationHandler
+.. autoclass:: LexicalHandler
+.. autoclass:: DeclarationHandler
 '''
 
 import collections
