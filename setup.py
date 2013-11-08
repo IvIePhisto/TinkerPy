@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.2.1'
+version = '0.2.2'
 
 setup(name='TinkerPy',
       version=version,
@@ -11,7 +11,7 @@ setup(name='TinkerPy',
       PyPy 2.0) contains the package ``tinkerpy`` which provides:
 
       *   funtionality related to Python 2 versus 3
-      *   special dictionary implementations
+      *   special dictionary and list implementations
       *   a function to flatten data structures composed of iterables
       *   some useful decorators
       *   SAX handlers

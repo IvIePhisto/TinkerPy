@@ -7,6 +7,7 @@ This Python 2 and 3 package provides:
 *   funtionality related to Python 2 versus 3
 *   special dictionary implementations (:class:`AttributeDict`,
     :class:`ImmutableDict`)
+*   a special list implementation (:class:`AllowingList`)
 *   the :func:`flatten` function to flatten data structures composed of
     iterables
 *   some useful decorators (:func:`multi_decorator`, :func:`attribute_dict`)
@@ -29,6 +30,7 @@ Iterator Types
 
 .. autoclass:: AttributeDict
 .. autoclass:: ImmutableDict
+.. autoclass:: AllowingList
 .. autofunction:: flatten
 
 
@@ -140,7 +142,7 @@ class ImmutableDict(collections.Mapping):
     Traceback (most recent call last):
     TypeError: 'ImmutableDict' object does not support item assignment
     '''
-    __slots__ = ('_dict')
+    __slots__ = {'_dict'}
 
     def __init__(self, *args, **kargs):
         self._dict = dict(*args, **kargs)
@@ -156,6 +158,115 @@ class ImmutableDict(collections.Mapping):
 
     def __iter__(self):
         return self._dict.__iter__()
+
+
+class AllowingList(collections.MutableSequence):
+    '''\
+    A list which checks on adding items, if the given item is allowed. This
+    class should be inherited from and extending classes should specify a
+    class or instance atttibute ``ALLOWED_ITEMS`` containing an iterable. Each
+    item of the iterable can either be a :class:`type` object (i.e. a class),
+    a callable taking one argument or a string. On adding the item is checked
+    against the contents of ``ALLOWED_ITEMS``: if the item is an instance of a
+    class contained there, a callable contained there returns :const:`True`
+    for the item or the name of the item's class and its super-classes is
+    contained there, then the item is added to the list, otherwise a
+    :class:`ValueError` is thrown.
+
+    Example:
+
+    >>> class TestList(AllowingList):
+    ...     ALLOWED_ITEMS = {'TestList', dict, lambda item: bool(item)}
+    ...
+    >>> t = TestList([True, ''])
+    Traceback (most recent call last):
+    ValueError: Invalid item: ''
+    >>> t = TestList([TestList()])
+    >>> t[0] = False
+    Traceback (most recent call last):
+    ValueError: Invalid item: False
+    >>> t.append({1: 2})
+    >>> t.append(0)
+    Traceback (most recent call last):
+    ValueError: Invalid item: 0
+    >>> t.insert(0, True)
+    >>> t.insert(0, False)
+    Traceback (most recent call last):
+    ValueError: Invalid item: False
+    >>> t.extend([1, False, 'Test'])
+    Traceback (most recent call last):
+    ValueError: Invalid item: False
+    >>> print(t)
+    tinkerpy.TestList([True, tinkerpy.TestList([]), {1: 2}, 1])
+    '''
+    def __init__(self, iterable=None):
+        if iterable is None:
+            self._list = list()
+        else:
+            try:
+                for item in iterable:
+                    self._check_child_allowed(item)
+            except TypeError:
+                pass
+            self._list = list(iterable)
+
+    def is_allowed_child(self, item):
+        '''\
+        Return :const:`True` if ``item`` is an allowed item.
+
+        :param item: The item to check.
+        :returns: :const:`True` if ``item`` is a valid item.
+        '''
+        try:
+            allowed = self.ALLOWED_ITEMS
+        except AttributeError:
+            return True
+        def is_allowed(allowed_spec):
+            if allowed_spec.__class__ is type:
+                return isinstance(item, allowed_spec)
+            try:
+                return allowed_spec(item)
+            except TypeError:
+                cls_name = str(allowed_spec)
+                for cls in item.__class__.__mro__:
+                    if cls.__name__ == cls_name:
+                        return True
+                return False
+        for allowed_spec in allowed:
+            if is_allowed(allowed_spec):
+                return True
+        return False
+
+    def _check_child_allowed(self, item):
+        if not self.is_allowed_child(item):
+            raise ValueError('Invalid item: {}'.format(repr(item)))
+
+    def __getitem__(self, index):
+        return self._list[index]
+
+    def __setitem__(self, index, item):
+        self._check_child_allowed(item)
+        self._list[index] = item
+
+    def __delitem__(self, index):
+        del self._list[index]
+
+    def insert(self, index, item):
+        '''\
+        Insert ``item`` at ``index``.
+        '''
+        self._check_child_allowed(item)
+        self._list.insert(index, item)
+
+    def __len__(self):
+        return len(self._list)
+
+    def __str__(self):
+        object_repr = object.__repr__(self)
+        object_repr = object_repr[1:object_repr.rfind(' object at ')]
+        return '{}({})'.format(object_repr, self._list)
+
+    __repr__ = __str__
 
 
 def flatten(obj, *flattening_configurations):
