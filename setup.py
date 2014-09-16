@@ -1,20 +1,24 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.2.2'
+version = '0.2.3'
 
 setup(name='TinkerPy',
       version=version,
       description="Tools tinkering with basic Python stuff.",
       long_description='''\
-      This Python 2 and 3 project (tested with CPython 2.7 and 3.3 as well as
-      PyPy 2.0) contains the package ``tinkerpy`` which provides:
+      This Python 2 and 3 project (tested with CPython 2.7 and 3.3  as well as
+      PyPy 2) contains the package `tinkerpy` which provides:
 
       *   funtionality related to Python 2 versus 3
-      *   special dictionary and list implementations
-      *   a function to flatten data structures composed of iterables
+      *   special mapping implementations
       *   some useful decorators
       *   SAX handlers
+      *   other functionality like a class handling integers represented as
+          strings (StrIntegers) special list implementation (AllowingList), the
+          flatten() function to flatten data structures composed of iterables
+          and a function to create anonymous classes (anonymous_class())
+      *   a Finite State Machine implementation
       ''',
       classifiers=[
             'Development Status :: 5 - Production/Stable',
