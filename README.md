@@ -17,8 +17,7 @@ This Python 2 and 3 project (tested with CPython 2.7 and 3.3  as well as PyPy
 This project uses the MIT License, so you may freely use, distribute and
 modify it, provided you include the content of `License.txt`.
 
-Install using [setuptools](https://pypi.python.org/pypi/setuptools) (only
-Python 2) or [distribute](http://pythonhosted.org/distribute/):
+Install using [setuptools](https://pypi.python.org/pypi/setuptools):
 
     easy_install tinkerpy
 
@@ -30,12 +29,6 @@ You might also be interested in:
 
 
 ## Release History
-=======
-**0.2.3**
-*   *Added:* `tinkerpy.StrIntegers`, `tinkerpy.ProxyDict`,
-    `tinkerpy.update_globals`, `tinkerpy.metaclass`, `tinkerpy.int_to_str`,
-    `tinkerpy.Unicode` and `tinkerpy.PY_VERSION_GT_2`.
-*   *Added:* The module `tinkerpy.fsm` implements a finite state machine API.
 
 **0.2.3**
 *   *Added:* `tinkerpy.StrIntegers`, `tinkerpy.ProxyDict`,
