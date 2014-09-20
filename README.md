@@ -24,7 +24,7 @@ Install using [setuptools](https://pypi.python.org/pypi/setuptools):
 
 You might also be interested in:
 
-* [TinkerPy on PyPi](https://pypi.python.org/pypi/TinkerPy)
+* [TinkerPy on PyPI](https://pypi.python.org/pypi/TinkerPy)
 * [TinkerPy Documentation](http://pythonhosted.org/TinkerPy/)
 
 
